@@ -1,0 +1,273 @@
+// ----------------------------
+// projects/dijkstra/Dijkstra.c++
+// Copyright (C) 2015
+// CS Hui
+// ----------------------------
+
+// --------
+// includes
+// --------
+
+#include <cassert>  // assert
+#include <iostream> // endl, istream, ostream
+#include <sstream>  // istringstream
+#include <string>   // getline, string
+#include <utility>  // make_pair, pair
+#include <queue>
+#include <functional>
+#include <map>
+#include <climits>
+
+#include "Dijkstra.h"
+
+using namespace std;
+
+// ------------
+// dijkstra_read
+// ------------
+
+pair<int, int> dijkstra_read (const string& s) {
+    istringstream sin(s);
+    int i;
+    int j;
+    sin >> i >> j;
+    return make_pair(i, j);}
+
+// ------------
+// dijkstra_read1
+// ------------
+
+tuple <int, int, int> dijkstra_read1 (const string& s) {
+    istringstream sin(s);
+    int i;
+    int j;
+    int z;
+    sin >> i >> j >> z;
+    return make_tuple(i, j, z);}
+
+// ------------
+// dijkstra_eval
+// ------------
+
+//vector<int> dijkstra_eval (vector <Node> &nodes, vector < vector<int> > &edges) {
+//vector<int> dijkstra_eval (int numNode, vector < vector<int> > &edges) {
+vector<int> dijkstra_eval (int numNode, map <int, vector<int> > &neighbor, map<pair<int, int>, int> &cost) {
+
+//	int numNode = (int) nodes.size();
+//	int dId 	= numNode - 1;
+//	int dId 	= numNode;
+//	int sId		= 1;
+	int nId;
+	int n1, n2, wt, tc;
+	pair<int, int> p1, p2;
+	priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> q;
+//	map<int, vector<int> > neighbor;
+//	map<pair<int, int>, int> cost;
+	vector<int> path;
+	vector<int> weight(numNode+1, INT_MAX);
+//	vector<int, int> pId(numNode+1, 0);
+	map<int, int> pId;
+/*
+	cout << "weight: "; printVec(weight);	
+	cout << "pId   : "; printVec(pId);	
+*/
+/*
+	cout << "{ ";
+	for (map<int, int>::iterator it = pId.begin(); it != pId.end(); it++) {
+		cout << "(" << it->first << ":" << it->second << ") "; }
+	cout << "}" << endl;
+*/
+
+	
+/*
+	for (unsigned int i=0; i<edges.size(); i++) {		
+		n1 = edges[i][0];
+		n2 = edges[i][1];
+		wt = edges[i][2];
+		nodes[n1].append(n2, wt);
+		nodes[n2].append(n1, wt); }		
+
+	vector<int> path = nodes[dId].getReversedSP(sId, nodes);
+*/
+
+/*
+	for (unsigned int i=0; i<edges.size(); i++) {		
+		n1 = edges[i][0];
+		n2 = edges[i][1];
+		wt = edges[i][2];
+		neighbor[n1].push_back(n2);
+		p1 = make_pair(n1 , n2);		
+		p2 = make_pair(n2 , n1);
+*/	
+/*
+		if (cost.count(p1) == 1) {
+			if (cost[p1] > wt) {
+				cost[p1] = wt;
+				cost[p2] = wt; }}
+		else {
+*/
+/*
+			neighbor[n2].push_back(n1);
+				cost[p1] = wt;
+				cost[p2] = wt; }
+*/
+//		}
+/*				
+	for (map<int, vector<int>>::iterator it = neighbor.begin(); it != neighbor.end(); it++) {
+		cout << it->first << ":";
+		for (unsigned int i=0; i<it->second.size(); i++) {
+			n2 = it->second[i]; 
+			p1 = make_pair(it->first, n2);
+			cout << " " << n2 << " " << cost[p1]; } 
+		cout << endl; }
+*/
+
+//	sId = numNode - 1;
+	int sId = numNode;
+	int dId = 1;
+
+	while(sId != dId) {
+		int cnt = (int) neighbor[sId].size();
+		for (int i=0; i<cnt; i++) {
+			nId = neighbor[sId][i];
+			p1 = make_pair(sId, nId);
+//			tc = nodes[sId].weight + cost[p1];
+			tc = weight[sId] + cost[p1];
+//cout << tc << " " << sId << nodes[sId].weight << " " << cost[p1] << endl;
+//			if ((nodes[nId].visited == false) || (nodes[nId].weight > tc)) {
+//				nodes[nId].visited = true;
+//				nodes[nId].weight = tc;
+			if (weight[nId] > tc) {
+				weight[nId] = tc;
+				p2 = make_pair(tc, nId);
+				q.push(p2);
+//				nodes[nId].pId = sId; }}
+				pId[nId] = sId;}}
+		if (q.size() == 0)  {
+			break; }
+		sId = q.top().second;
+		q.pop(); }
+/*	
+	cout << weight.size() << " " << pId.size() << endl;	
+	cout << "weight: "; printVec(weight);	
+	cout << "pId   : "; printVec(pId);	
+*/		
+//	sId = numNode - 1;
+//	if (nodes[dId].pId == 0) {
+	sId = numNode;
+	if (pId[dId] == 0) {
+		path.push_back(-1); }
+	else {
+		path.push_back(dId);
+//		while (nodes[dId].id != sId) {
+		while (dId != sId) {
+		
+//			cout << sId << ": " << dId << "(" << pId[dId] << ")" << endl;
+		
+//			path.push_back(nodes[dId].pId);
+//			nodes[dId] = nodes[nodes[dId].pId]; }}				
+			path.push_back(pId[dId]);
+			dId = pId[dId]; }}
+		
+//	vector<int> path = { 1, 2, 3, 4};
+	return path;
+}
+
+
+// -------------
+// printVec
+// -------------
+
+void printVec(vector<int> &v) {
+	int i;
+	cout << "[";
+	for (i=0; i<(int)v.size()-1; i++) {
+		cout << v[i] << " "; }
+	cout << v[i] << "]" << endl;
+}
+
+// -------------
+// printNotes
+// -------------
+
+void printNodes(vector<Node> &nodes) {
+	for (int i=1; i<(int)nodes.size(); i++) {
+		nodes[i].print(); }
+}
+
+
+// -------------
+// dijkstra_print
+// -------------
+
+void dijkstra_print (ostream& w, vector<int> &v) {
+	for (unsigned int i=0; i<v.size(); i++) {
+    	w << v[i] << ' '; }
+    w << endl; }
+    
+    
+// -------------
+// dijkstra_solve
+// -------------
+
+void dijkstra_solve (istream& r, ostream& w) {
+    string 	s;
+    bool	fLine = true;
+
+    pair<int, int> 			p, p1, p2;
+    int						n1, n2, wt;
+    tuple <int, int, int>	t;
+//  vector<Node> 			nodes;
+//	vector < vector <int> > edges;
+//	vector<int> 			v(3);
+	map<int, vector<int> > 	neighbor;
+	map<pair<int, int>, int> cost;
+
+    while (getline(r, s)) {
+    	if (fLine) {
+ 			fLine = false;
+        	p = dijkstra_read(s);
+//			nodes.reserve(p.first+1);			// elem 0 is not used
+//			edges.reserve(p.second);
+/*
+			for (int i=0; i<=p.first; i++) {
+				nodes.push_back(Node(i)); }}				
+*/
+		}
+		else {
+			istringstream sin(s);
+//			sin >> v[0] >> v[1] >> v[2];
+//			edges.push_back(v); }}
+
+			sin >> n1 >> n2 >> wt;
+			neighbor[n1].push_back(n2);
+			p1 = make_pair(n1 , n2);		
+			p2 = make_pair(n2 , n1);
+/*
+			if (cost.count(p1) == 1) {
+				if (cost[p1] > wt) {
+					cost[p1] = wt;
+					cost[p2] = wt; }}
+			else {
+*/
+			
+				neighbor[n2].push_back(n1);
+					cost[p1] = wt;
+					cost[p2] = wt; }
+
+
+/*
+			t = dijkstra_read1(s);
+			tie(v[0], v[1], v[2]) = t;
+			edges.push_back(v); }}
+*/
+
+//    vector<int> path = dijkstra_eval(nodes, edges);
+    vector<int> path = dijkstra_eval(p.first, neighbor, cost);
+    dijkstra_print(w, path); }
+    
+}    
+    
+    
+    
+    
